@@ -1,14 +1,15 @@
 package com.branco.piebackend.services;
 
 import com.branco.piebackend.entities.UniversityEntity;
+import com.branco.piebackend.models.university.UniversityResponseDTO;
 
 import java.util.List;
 import java.util.Optional;
 
 public interface UniversityService {
-    Optional<UniversityEntity> findById(Long id);
+    Optional<UniversityResponseDTO> findById(Long id);
 
-    List<UniversityEntity> findAllByIds(List<Long> id);
+    List<UniversityResponseDTO> findAllByIds(List<Long> ids);
 
-    List<UniversityEntity> findAll();
+    List<UniversityResponseDTO> findAll();
 }

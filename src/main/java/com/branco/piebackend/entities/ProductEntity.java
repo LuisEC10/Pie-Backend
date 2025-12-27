@@ -28,6 +28,14 @@ public class ProductEntity {
     @Column(nullable = false)
     private Integer stock;
 
+    @NotBlank
+    @Column(nullable = false, length = 1000)
+    private String description;
+
+    @NotBlank
+    @Column(nullable = false, columnDefinition = "TEXT")
+    private String imageURL;
+
     @ManyToOne(fetch =  FetchType.LAZY)
     @JoinColumn(name = "seller_id", nullable = false)
     @ToString.Exclude

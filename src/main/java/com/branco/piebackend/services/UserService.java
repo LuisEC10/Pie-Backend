@@ -1,18 +1,23 @@
-package com.branco.piebackend.repositories;
+package com.branco.piebackend.services;
 
 import com.branco.piebackend.entities.UserEntity;
+import com.branco.piebackend.models.user.UserDTO;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.Optional;
 
-public interface UserRepository extends JpaRepository<UserEntity, Long> {
+public interface UserService {
 
-    Optional<UserEntity> findUserByCode(String code);
+    Optional<UserEntity> findById(Long id);
 
     Page<UserEntity> findAll(Pageable pageable);
 
     Page<UserEntity> findAllByUniversity_Id(Pageable pageable, Long universityId);
 
+    UserEntity save(UserEntity userEntity);
+
+    Optional<UserEntity> update(UserDTO userDTO, Long id);
+
+    void deleteById(Long id);
 }

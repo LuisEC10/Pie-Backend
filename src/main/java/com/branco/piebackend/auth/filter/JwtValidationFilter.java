@@ -55,7 +55,7 @@ public class JwtValidationFilter extends BasicAuthenticationFilter {
                     new UsernamePasswordAuthenticationToken(username, null, roles);
 
             SecurityContextHolder.getContext().setAuthentication(authenticationToken);
-
+            System.out.println(authenticationToken);
             chain.doFilter(request, response);
 
         }catch (JwtException e){

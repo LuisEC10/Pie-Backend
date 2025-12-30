@@ -1,7 +1,8 @@
 package com.branco.piebackend.services;
 
-import com.branco.piebackend.entities.UserEntity;
-import com.branco.piebackend.models.user.UserDTO;
+import com.branco.piebackend.models.user.UserRegisterDTO;
+import com.branco.piebackend.models.user.UserResponseDTO;
+import com.branco.piebackend.models.user.UserUpdateDTO;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
@@ -9,15 +10,16 @@ import java.util.Optional;
 
 public interface UserService {
 
-    Optional<UserEntity> findById(Long id);
+    Optional<UserResponseDTO> findById(Long id);
 
-    Page<UserEntity> findAll(Pageable pageable);
+    Page<UserResponseDTO> findAll(Pageable pageable);
 
-    Page<UserEntity> findAllByUniversity_Id(Pageable pageable, Long universityId);
+    Page<UserResponseDTO> findAllByUniversity_Id(Pageable pageable, Long universityId);
 
-    UserEntity save(UserEntity userEntity);
+    UserResponseDTO save(UserRegisterDTO userRegisterDTO);
 
-    Optional<UserEntity> update(UserDTO userDTO, Long id);
+    Optional<UserResponseDTO> update(UserUpdateDTO userDTO, Long id);
 
+    // soft delete
     void deleteById(Long id);
 }

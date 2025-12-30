@@ -2,7 +2,9 @@ package com.branco.piebackend.services;
 
 import com.branco.piebackend.entities.UniversityEntity;
 import com.branco.piebackend.mappers.UniversityMapper;
+import com.branco.piebackend.models.university.UniversityRegisterDTO;
 import com.branco.piebackend.models.university.UniversityResponseDTO;
+import com.branco.piebackend.models.university.UniversityUpdateDTO;
 import com.branco.piebackend.repositories.UniversityRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -44,5 +46,25 @@ public class UniversityServiceImpl implements UniversityService{
                 .stream()
                 .map(this.universityMapper::convertToResponseDTO)
                 .toList();
+    }
+
+    @Override
+    @Transactional
+    public UniversityResponseDTO save(UniversityRegisterDTO universityRegisterDTO) {
+        UniversityEntity entity = this.universityMapper.convertToEntity(universityRegisterDTO);
+        UniversityEntity saved = this.universityRepository.save(entity);
+        return this.universityMapper.convertToResponseDTO(saved);
+    }
+
+    @Override
+    @Transactional
+    public Optional<UniversityResponseDTO> update(UniversityUpdateDTO universityUpdateDTO, Long id) {
+        Optional<UniversityEntity> optionalUniversity = this.universityRepository.findById(id);
+        if(optionalUniversity.isPresent()){
+            UniversityEntity universityDB = optionalUniversity.get();
+            this.universityMapper.updateUniversityFromDTO(universityUpdateDTO, universityDB);
+            return Optional.of(this.universityMapper.convertToResponseDTO(this.universityRepository.save(universityDB)));
+        }
+        return Optional.empty();
     }
 }

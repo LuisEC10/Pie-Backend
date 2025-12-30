@@ -4,6 +4,7 @@ import com.branco.piebackend.entities.ProductEntity;
 import com.branco.piebackend.entities.UniversityEntity;
 import com.branco.piebackend.models.university.UniversityRegisterDTO;
 import com.branco.piebackend.models.university.UniversityResponseDTO;
+import com.branco.piebackend.models.university.UniversityUpdateDTO;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -30,7 +31,7 @@ public class UniversityMapper {
                 .build();
     }
 
-    public void updateUniversityFromDTO(UniversityRegisterDTO dto, UniversityEntity entity){
+    public void updateUniversityFromDTO(UniversityUpdateDTO dto, UniversityEntity entity){
         if (dto == null || entity == null) return;
 
         entity.setName(dto.getName());

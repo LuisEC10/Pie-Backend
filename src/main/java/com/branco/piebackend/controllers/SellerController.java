@@ -3,6 +3,7 @@ package com.branco.piebackend.controllers;
 import com.branco.piebackend.entities.SellerEntity;
 import com.branco.piebackend.entities.UniversityEntity;
 import com.branco.piebackend.models.seller.SellerDTO;
+import com.branco.piebackend.models.university.UniversityResponseDTO;
 import com.branco.piebackend.services.SellerService;
 import com.branco.piebackend.services.UniversityService;
 import com.branco.piebackend.services.UserService;
@@ -73,13 +74,13 @@ public class SellerController {
     }
 
     private SellerEntity convertToEntity(SellerDTO dto){
-        List<UniversityEntity> universities = this.universityService.findAllByIds(dto.getUniversities());
+        List<UniversityResponseDTO> universities = this.universityService.findAllByIds(dto.getUniversities());
 
         return SellerEntity.builder()
                 .brand(dto.getBrand())
                 .id(dto.getId())
                 .owner(this.userService.findById(dto.getOwnerId()).orElseThrow())
-                .universities(universities)
+                //.universities(universities.stream().toList());
                 .build();
     }
 

@@ -1,18 +1,16 @@
 package com.branco.piebackend.controllers;
 
-import com.branco.piebackend.entities.UniversityEntity;
-import com.branco.piebackend.models.university.UniversityDTO;
+import com.branco.piebackend.models.university.UniversityRegisterDTO;
+import com.branco.piebackend.models.university.UniversityResponseDTO;
+import com.branco.piebackend.models.university.UniversityUpdateDTO;
 import com.branco.piebackend.services.UniversityService;
+import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.annotation.*;
 
-import java.util.Collections;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 @RestController
 @RequestMapping("/api/universities")
@@ -25,33 +23,48 @@ public class UniversityController {
     }
 
     @GetMapping
-    public List<UniversityDTO> list(){
-        return this.universityService.findAll()
-                .stream()
-                .map(this::convertToDTO)
-                .toList();
+    public List<UniversityResponseDTO> list(){
+        return this.universityService.findAll();
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<?> showUniversityById(@PathVariable Long id){
-        Optional<UniversityEntity> optionalUniversity = this.universityService.findById(id);
+        Optional<UniversityResponseDTO> optionalUniversity = this.universityService.findById(id);
         if(optionalUniversity.isPresent()) {
-            UniversityDTO universityDTO = convertToDTO(optionalUniversity.orElseThrow());
+            UniversityResponseDTO universityDTO = optionalUniversity.get();
             return ResponseEntity.status(HttpStatus.OK).body(universityDTO);
         }
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(Collections.singletonMap("error", "University not found by Id:" + id));
     }
 
-    private UniversityDTO convertToDTO(UniversityEntity entity){
-        return UniversityDTO.builder()
-                .id(entity.getId())
-                .alias(entity.getAlias())
-                .name(entity.getName())
-                .emailDomain(entity.getEmailDomain())
-                .centerLatitude(entity.getCenterLatitude())
-                .centerLongitude(entity.getCenterLongitude())
-                .build();
+    @PostMapping
+    public ResponseEntity<?> create(@Valid @RequestBody UniversityRegisterDTO university, BindingResult result) {
+        if(result.hasErrors()){
+            return validation(result);
+        }
+        UniversityResponseDTO saved = this.universityService.save(university);
+        return ResponseEntity.status(HttpStatus.CREATED).body(saved);
     }
 
+    @PutMapping("/{id}")
+    public ResponseEntity<?> update(@Valid @RequestBody UniversityUpdateDTO university, BindingResult result, @PathVariable Long id){
+        if(result.hasErrors()){
+            return validation(result);
+        }
 
+        Optional<UniversityResponseDTO> optionalUniversity = this.universityService.update(university, id);
+        if(optionalUniversity.isPresent()){
+            UniversityResponseDTO universityDTO = optionalUniversity.get();
+            return ResponseEntity.ok(universityDTO);
+        }
+        return ResponseEntity.notFound().build();
+    }
+
+    private static ResponseEntity<Map<String, String>> validation(BindingResult result) {
+        Map<String, String> errors = new HashMap<>();
+        result.getFieldErrors().forEach(error -> {
+            errors.put(error.getField(), "The field " + error.getField() + " " + error.getDefaultMessage());
+        });
+        return ResponseEntity.badRequest().body(errors);
+    }
 }

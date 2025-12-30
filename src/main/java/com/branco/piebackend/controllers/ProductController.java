@@ -25,7 +25,7 @@ public class ProductController {
     }
 
     @GetMapping()
-    public Page<ProductResponseDTO> listPageable(@PageableDefault(size = 10, page = 0) Pageable pageable){
+    public Page<ProductResponseDTO> listPageable(@PageableDefault(page = 0) Pageable pageable){
         return this.productService.findAll(pageable);
     }
 
@@ -40,23 +40,23 @@ public class ProductController {
     }
 
     @GetMapping("/seller/{sellerId}")
-    public Page<ProductResponseDTO> listProductsBySeller(@PathVariable Long sellerId, @PageableDefault(size = 10, page = 0) Pageable pageable){
+    public Page<ProductResponseDTO> listProductsBySeller(@PathVariable Long sellerId, @PageableDefault( page = 0) Pageable pageable){
         return this.productService.findSellerProducts(sellerId, pageable);
     }
 
     @GetMapping("/name/{name}")
-    public Page<ProductResponseDTO> listProductsByName(@PathVariable String name, @PageableDefault(size = 10, page = 0) Pageable pageable){
+    public Page<ProductResponseDTO> listProductsByName(@PathVariable String name, @PageableDefault(page = 0) Pageable pageable){
         return this.productService.findByProductName(name, pageable);
     }
 
     @GetMapping("/stock/{stock}")
-    public Page<ProductResponseDTO> listProductsByStock(@PathVariable Integer stock, @PageableDefault(size = 10, page = 0) Pageable pageable){
+    public Page<ProductResponseDTO> listProductsByStock(@PathVariable Integer stock, @PageableDefault(page = 0) Pageable pageable){
         return this.productService.findByStock(stock, pageable);
     }
 
     @GetMapping("/seller/{sellerId}/stock/{stock}")
     public Page<ProductResponseDTO> listProductsBySellerAndStock(@PathVariable Long sellerId, @PathVariable Integer stock,
-                                                                 @PageableDefault(size = 10, page = 0) Pageable pageable) {
+                                                                 @PageableDefault(page = 0) Pageable pageable) {
         return this.productService.findBySellerAndStock(sellerId, stock, pageable);
     }
 

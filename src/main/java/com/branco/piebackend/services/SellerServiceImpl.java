@@ -1,12 +1,16 @@
 package com.branco.piebackend.services;
 
 import com.branco.piebackend.entities.SellerEntity;
+import com.branco.piebackend.mappers.SellerMapper;
+import com.branco.piebackend.models.seller.SellerRegisterDTO;
+import com.branco.piebackend.models.seller.SellerResponseDTO;
 import com.branco.piebackend.repositories.SellerRepository;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -14,32 +18,32 @@ import java.util.Optional;
 public class SellerServiceImpl implements SellerService{
 
     private final SellerRepository sellerRepository;
+    private final SellerMapper sellerMapper;
 
-    public SellerServiceImpl(SellerRepository sellerRepository){
+    public SellerServiceImpl(SellerRepository sellerRepository, SellerMapper sellerMapper){
         this.sellerRepository = sellerRepository;
+        this.sellerMapper = sellerMapper;
     }
 
     @Override
     @Transactional(readOnly = true)
-    public Optional<SellerEntity> getById(Long id) {
-        return this.sellerRepository.findById(id);
+    public Optional<SellerResponseDTO> findById(Long id) {
+        return this.sellerRepository.findById(id)
+                .map(this.sellerMapper::convertToResponseDTO);
     }
 
     @Override
     @Transactional(readOnly = true)
-    public List<SellerEntity> findAll() {
-        return this.sellerRepository.findAll();
-    }
-
-    @Override
-    @Transactional(readOnly = true)
-    public Page<SellerEntity> findAll(Pageable pageable) {
-        return this.sellerRepository.findAll(pageable);
+    public Page<SellerResponseDTO> findAll(Pageable pageable) {
+        return this.sellerRepository.findAll(pageable)
+                .map(this.sellerMapper::convertToResponseDTO);
     }
 
     @Override
     @Transactional
-    public SellerEntity save(SellerEntity sellerEntity) {
-        return this.sellerRepository.save(sellerEntity);
+    public SellerResponseDTO save(SellerRegisterDTO sellerEntity) {
+        SellerEntity entity = this.sellerMapper.convertToEntity(sellerEntity);
+        SellerEntity saved = this.sellerRepository.save(entity);
+        return this.sellerMapper.convertToResponseDTO(saved);
     }
 }

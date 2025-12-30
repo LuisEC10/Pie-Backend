@@ -4,16 +4,16 @@ import com.branco.piebackend.entities.ProductEntity;
 import com.branco.piebackend.models.product.ProductRegisterDTO;
 import com.branco.piebackend.models.product.ProductResponseDTO;
 import com.branco.piebackend.models.product.ProductUpdateDTO;
-import com.branco.piebackend.services.SellerService;
+import com.branco.piebackend.repositories.SellerRepository;
 import org.springframework.stereotype.Component;
 
 @Component
 public class ProductMapper {
 
-    private final SellerService sellerService;
+    private final SellerRepository sellerRepository;
 
-    public ProductMapper(SellerService sellerService){
-        this.sellerService = sellerService;
+    public ProductMapper(SellerRepository sellerRepository){
+        this.sellerRepository = sellerRepository;
     }
 
     public void updateProductFromDTO(ProductUpdateDTO dto, ProductEntity entity){
@@ -33,7 +33,7 @@ public class ProductMapper {
                 .stock(dto.getStock())
                 .price(dto.getPrice())
                 .imageURL(dto.getImageURL())
-                .seller(this.sellerService.getById(dto.getSellerId()).orElseThrow())
+                .seller(this.sellerRepository.findById(dto.getSellerId()).orElseThrow())
                 .build();
     }
 

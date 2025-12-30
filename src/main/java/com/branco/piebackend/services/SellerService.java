@@ -1,18 +1,16 @@
 package com.branco.piebackend.services;
 
-import com.branco.piebackend.entities.SellerEntity;
+import com.branco.piebackend.models.seller.SellerRegisterDTO;
+import com.branco.piebackend.models.seller.SellerResponseDTO;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
-import java.util.List;
 import java.util.Optional;
 
 public interface SellerService {
-    Optional<SellerEntity> getById(Long id);
+    Optional<SellerResponseDTO> findById(Long id);
 
-    List<SellerEntity> findAll();
+    Page<SellerResponseDTO> findAll(Pageable pageable);
 
-    Page<SellerEntity> findAll(Pageable pageable);
-
-    SellerEntity save(SellerEntity sellerEntity);
+    SellerResponseDTO save(SellerRegisterDTO sellerEntity);
 }

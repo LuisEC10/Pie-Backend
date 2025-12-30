@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import lombok.*;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -28,5 +29,6 @@ public class ShoppingCartEntity {
     @OneToMany(mappedBy = "shoppingCart", cascade = CascadeType.ALL)
     @ToString.Exclude
     @EqualsAndHashCode.Exclude
-    private List<OrderEntity> orders;
+    @Builder.Default
+    private List<OrderEntity> orders = new ArrayList<>();
 }

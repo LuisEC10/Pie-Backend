@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import lombok.*;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -48,7 +49,8 @@ public class UserEntity {
             inverseJoinColumns = @JoinColumn(name = "role_id"),
             uniqueConstraints = {@UniqueConstraint(columnNames = {"user_id", "role_id"})}
     )
-    private List<Role> roles;
+    @Builder.Default
+    private List<Role> roles = new ArrayList<>();
 
     // foreign key for user and university
     @ManyToOne(fetch = FetchType.LAZY)

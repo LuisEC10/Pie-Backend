@@ -9,9 +9,11 @@ import com.branco.piebackend.repositories.UserRepository;
 import jakarta.validation.constraints.NotNull;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.Optional;
 
@@ -52,6 +54,10 @@ public class UserServiceImpl implements UserService{
     @Override
     @Transactional
     public UserResponseDTO save(UserRegisterDTO userRegisterDTO) {
+        if(this.userRepository.existsByEmail(userRegisterDTO.getEmail())) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Email" + userRegisterDTO.getEmail() + " already exists");
+        }
+
         UserEntity entity = this.userMapper.convertToEntity(userRegisterDTO);
         entity.setPassword(this.passwordEncoder.encode(userRegisterDTO.getPassword()));
         UserEntity saved = this.userRepository.save(entity);

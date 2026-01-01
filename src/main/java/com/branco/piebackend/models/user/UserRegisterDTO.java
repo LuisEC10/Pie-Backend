@@ -20,6 +20,9 @@ public class UserRegisterDTO {
     private String lastName;
 
     @NotBlank
+    private String code;
+
+    @NotBlank
     @Email
     private String email;
 

@@ -1,6 +1,5 @@
 package com.branco.piebackend.models.user;
 
-import com.branco.piebackend.entities.Role;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -15,6 +14,7 @@ import java.util.List;
 public class UserResponseDTO {
     private Long id;
     private String firstName;
+    private String code;
     private String lastName;
     private String email;
     private String phoneNumber;

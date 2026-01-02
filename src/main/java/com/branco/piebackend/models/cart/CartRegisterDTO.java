@@ -1,4 +1,4 @@
-package com.branco.piebackend.models.shoppingCart;
+package com.branco.piebackend.models.cart;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -9,7 +9,7 @@ import lombok.NoArgsConstructor;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class ShoppingRegisterDTO {
+public class CartRegisterDTO {
     private Double total;
     private Long userId;
 }

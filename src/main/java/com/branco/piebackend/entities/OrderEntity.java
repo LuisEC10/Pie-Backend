@@ -2,9 +2,11 @@ package com.branco.piebackend.entities;
 
 import com.branco.piebackend.entities.states.ItemState;
 import jakarta.persistence.*;
-import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.*;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Table(name = "orders")
@@ -16,10 +18,6 @@ public class OrderEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
-    @NotNull
-    @Column(nullable = false)
-    private Integer quantity;
 
     @NotNull
     @Column(nullable = false)
@@ -37,18 +35,24 @@ public class OrderEntity {
     @Column(nullable = false)
     private Double shipLongitude;
 
-    @ManyToOne(fetch =  FetchType.LAZY)
-    @JoinColumn(name = "product_id", nullable = false)
-    @ToString.Exclude // avoid infinite loops
-    private ProductEntity product;
-
-    @ManyToOne(fetch =  FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false)
     @ToString.Exclude
-    private UserEntity userDelivery;
+    private UserEntity user;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "shopping_cart_id", nullable = false)
+    @JoinColumn(name = "delivery_person_id")
     @ToString.Exclude
-    private ShoppingCartEntity shoppingCart;
+    private UserEntity deliveryPerson;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "seller_id", nullable = false)
+    @ToString.Exclude
+    private SellerEntity seller;
+
+    @OneToMany(mappedBy = "order", cascade = CascadeType.ALL)
+    @ToString.Exclude
+    @EqualsAndHashCode.Exclude
+    @Builder.Default
+    List<OrderItemEntity> orderItems = new ArrayList<>();
 }

@@ -60,4 +60,7 @@ public class SellerEntity {
     @EqualsAndHashCode.Exclude
     @Builder.Default
     private List<ProductEntity> products = new ArrayList<>();
+
+    @OneToMany(mappedBy = "seller")
+    private List<OrderEntity> incomingOrders = new ArrayList<>();
 }

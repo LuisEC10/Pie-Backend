@@ -13,6 +13,7 @@ import com.branco.piebackend.repositories.CartItemRepository;
 import com.branco.piebackend.repositories.CartRepository;
 import com.branco.piebackend.repositories.ProductRepository;
 import com.branco.piebackend.repositories.UserRepository;
+import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -37,10 +38,9 @@ public class CartServiceImpl implements CartService{
 
     @Override
     @Transactional
-    public Optional<CartResponseDTO> addItemToCart(Long userId, CartItemRequestDTO request) {
-        CartEntity cart = this.cartRepository.findByUserId(userId).orElseGet(() -> {
-            UserEntity user = this.userRepository.findById(userId)
-                .orElseThrow();
+    public Optional<CartResponseDTO> addItemToCart(String userCode, CartItemRequestDTO request) {
+        UserEntity user = this.getUserEntityFromAuth(userCode);
+        CartEntity cart = this.cartRepository.findByUserId(user.getId()).orElseGet(() -> {
             return CartEntity.builder().user(user).total(0.0).build();
         });
         ProductEntity product = this.productRepository.findById(request.getProductId()).orElseThrow();
@@ -69,8 +69,9 @@ public class CartServiceImpl implements CartService{
 
     @Override
     @Transactional
-    public Optional<CartResponseDTO> removeItemFromCart(Long userId, Long cartItemId) {
-        CartEntity cart = this.cartRepository.findByUserId(userId).orElseThrow();
+    public Optional<CartResponseDTO> removeItemFromCart(String userCode, Long cartItemId) {
+        UserEntity user = this.getUserEntityFromAuth(userCode);
+        CartEntity cart = this.cartRepository.findByUserId(user.getId()).orElseThrow();
         Optional<CartItemEntity> item = cart.getItems().stream()
                 .filter(it -> it.getId().equals(cartItemId)).findFirst();
         cart.getItems().remove(item.orElseThrow());
@@ -83,12 +84,12 @@ public class CartServiceImpl implements CartService{
 
     @Override
     @Transactional
-    public Optional<CartResponseDTO> getCartByUser(Long userId) {
-        Optional<CartEntity> optionalCart = this.cartRepository.findByUserId(userId);
+    public Optional<CartResponseDTO> getCartByUser(String userCode) {
+        UserEntity user = this.getUserEntityFromAuth(userCode);
+        Optional<CartEntity> optionalCart = this.cartRepository.findByUserId(user.getId());
         if(optionalCart.isPresent()){
             return Optional.of(this.cartMapper.convertToResponseDTO(optionalCart.get()));
         }
-        UserEntity user = this.userRepository.findById(userId).orElseThrow();
         CartEntity newCart = CartEntity.builder()
                 .total(0.0)
                 .user(user).build();
@@ -98,10 +99,16 @@ public class CartServiceImpl implements CartService{
 
     @Override
     @Transactional
-    public void clearCart(Long userId) {
-        CartEntity cart = this.cartRepository.findByUserId(userId).orElseThrow();
+    public void clearCart(String userCode) {
+        UserEntity user = this.getUserEntityFromAuth(userCode);
+        CartEntity cart = this.cartRepository.findByUserId(user.getId()).orElseThrow();
         cart.getItems().clear();
         cart.setTotal(0.0);
         this.cartRepository.save(cart);
+    }
+
+    private UserEntity getUserEntityFromAuth(String userCode) {
+        return this.userRepository.findUserByCode(userCode)
+                .orElseThrow(() -> new RuntimeException("User not found in BD"));
     }
 }

@@ -55,8 +55,7 @@ public class SellerServiceImpl implements SellerService{
     @Override
     @Transactional
     public SellerResponseDTO save(SellerRegisterDTO dto, String userCode) {
-        Long ownerId = this.getUserIdFromAuth(userCode);
-        UserEntity owner = this.userRepository.findById(ownerId).orElseThrow();
+        UserEntity owner = this.userRepository.findUserByCode(userCode).orElseThrow();
         List<UniversityEntity> universities = this.universityRepository.findAllById(dto.getUniversities());
         Role sellerRole = this.roleRepository.findByName("ROLE_SELLER").orElseThrow();
 
@@ -75,9 +74,4 @@ public class SellerServiceImpl implements SellerService{
         SellerEntity saved = this.sellerRepository.save(seller);
         return this.sellerMapper.convertToResponseDTO(saved);
     }
-
-    private Long getUserIdFromAuth(String userCode) {
-        return userRepository.findUserByCode(userCode).orElseThrow().getId();
-    }
-
 }

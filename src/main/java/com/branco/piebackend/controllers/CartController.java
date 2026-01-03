@@ -12,36 +12,35 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/api/cart")
 public class CartController {
     private final CartService cartService;
-    private final UserRepository userRepository;
 
-    public CartController(CartService cartService, UserRepository userRepository){
+    public CartController(CartService cartService){
         this.cartService = cartService;
-        this.userRepository = userRepository;
     }
 
     @GetMapping
     public ResponseEntity<?> getMyCart(Authentication authentication){
-        Long userId = this.getUserIdFromAuth(authentication);
-        return ResponseEntity.of(this.cartService.getCartByUser(userId));
+        String userCode = authentication.getName();
+        return ResponseEntity.of(this.cartService.getCartByUser(userCode));
     }
 
     @PostMapping("/add")
     public ResponseEntity<?> addItemToCart(@RequestBody CartItemRequestDTO request, Authentication authentication) {
-        Long userId = this.getUserIdFromAuth(authentication);
-        return ResponseEntity.of(this.cartService.addItemToCart(userId, request));
+        String userCode = authentication.getName();
+        return ResponseEntity.of(this.cartService.addItemToCart(userCode, request));
+    }
+
+    @DeleteMapping("/remove/{cartItemId}")
+    public ResponseEntity<?> removeItemFromCart(@PathVariable Long cartItemId, Authentication authentication) {
+        String userCode = authentication.getName();
+        return ResponseEntity.of(this.cartService.removeItemFromCart(userCode, cartItemId));
     }
 
     @DeleteMapping()
     public ResponseEntity<Void> clearCart(Authentication authentication){
-        Long userId = this.getUserIdFromAuth(authentication);
-        this.cartService.clearCart(userId);
+        String userCode = authentication.getName();
+        this.cartService.clearCart(userCode);
         return ResponseEntity.noContent().build();
     }
 
-    private Long getUserIdFromAuth(Authentication authentication) {
-        String code = authentication.getName();
-        UserEntity user = userRepository.findUserByCode(code)
-                .orElseThrow(() -> new RuntimeException("User not found in BD"));
-        return user.getId();
-    }
+
 }

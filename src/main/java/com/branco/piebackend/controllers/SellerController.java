@@ -2,7 +2,6 @@ package com.branco.piebackend.controllers;
 
 import com.branco.piebackend.models.seller.SellerRegisterDTO;
 import com.branco.piebackend.models.seller.SellerResponseDTO;
-import com.branco.piebackend.repositories.UserRepository;
 import com.branco.piebackend.services.SellerService;
 import jakarta.validation.Valid;
 import org.springframework.data.domain.Page;

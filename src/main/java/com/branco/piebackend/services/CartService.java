@@ -7,11 +7,11 @@ import com.branco.piebackend.models.cart.CartResponseDTO;
 import java.util.Optional;
 
 public interface CartService {
-    Optional<CartResponseDTO> addItemToCart(Long userId, CartItemRequestDTO request);
+    Optional<CartResponseDTO> addItemToCart(String userCode, CartItemRequestDTO request);
 
-    Optional<CartResponseDTO> removeItemFromCart(Long userId, Long cartItemId);
+    Optional<CartResponseDTO> removeItemFromCart(String userCode, Long cartItemId);
 
-    Optional<CartResponseDTO> getCartByUser(Long userId);
+    Optional<CartResponseDTO> getCartByUser(String userCode);
 
-    void clearCart(Long userId);
+    void clearCart(String userCode);
 }

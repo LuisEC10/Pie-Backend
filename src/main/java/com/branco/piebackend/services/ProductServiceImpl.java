@@ -1,11 +1,13 @@
 package com.branco.piebackend.services;
 
 import com.branco.piebackend.entities.ProductEntity;
+import com.branco.piebackend.entities.SellerEntity;
 import com.branco.piebackend.mappers.ProductMapper;
 import com.branco.piebackend.models.product.ProductRegisterDTO;
 import com.branco.piebackend.models.product.ProductResponseDTO;
 import com.branco.piebackend.models.product.ProductUpdateDTO;
 import com.branco.piebackend.repositories.ProductRepository;
+import com.branco.piebackend.repositories.SellerRepository;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -18,11 +20,14 @@ import java.util.Optional;
 public class ProductServiceImpl implements ProductService{
 
     private final ProductRepository productRepository;
+    private final SellerRepository sellerRepository;
     private final ProductMapper productMapper;
 
-    public ProductServiceImpl(ProductRepository productRepository, ProductMapper productMapper){
+    public ProductServiceImpl(ProductRepository productRepository, ProductMapper productMapper,
+                              SellerRepository sellerRepository){
         this.productRepository = productRepository;
         this.productMapper = productMapper;
+        this.sellerRepository = sellerRepository;
 
     }
     @Override
@@ -79,7 +84,9 @@ public class ProductServiceImpl implements ProductService{
     @Override
     @Transactional
     public ProductResponseDTO save(ProductRegisterDTO product) {
+        SellerEntity seller = this.sellerRepository.findById(product.getSellerId()).orElseThrow();
         ProductEntity entity = this.productMapper.convertToEntity(product);
+        entity.setSeller(seller);
         ProductEntity saved = this.productRepository.save(entity);
         return this.productMapper.convertToResponseDTO(saved);
     }

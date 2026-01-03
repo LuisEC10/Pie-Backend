@@ -15,19 +15,11 @@ import java.util.ArrayList;
 @Component
 public class SellerMapper {
 
-    private final UserRepository userRepository;
-    private final UniversityRepository universityRepository;
-
-    public SellerMapper(UserRepository userRepository, UniversityRepository universityRepository){
-        this.userRepository = userRepository;
-        this.universityRepository = universityRepository;
-    }
-
     public SellerResponseDTO convertToResponseDTO(SellerEntity entity){
         return SellerResponseDTO.builder()
                 .brand(entity.getBrand())
                 .id(entity.getId())
-                .ownerId(entity.getOwner().getId())
+                .ownerId(entity.getOwner() != null ? entity.getOwner().getId() : null)
                 .universities(entity.getUniversities().stream().map(UniversityEntity::getId).toList())
                 .deliveries(entity.getDeliveries().stream().map(UserEntity::getId).toList())
                 .products(entity.getProducts() == null ? new ArrayList<>(): entity.getProducts().stream().map(ProductEntity::getId).toList())
@@ -36,8 +28,6 @@ public class SellerMapper {
 
     public SellerEntity convertToEntity(SellerRegisterDTO dto){
         return SellerEntity.builder()
-                .owner(this.userRepository.findById(dto.getOwnerId()).orElseThrow())
-                .universities(this.universityRepository.findAllById(dto.getUniversities()))
                 .brand(dto.getBrand())
                 .build();
     }

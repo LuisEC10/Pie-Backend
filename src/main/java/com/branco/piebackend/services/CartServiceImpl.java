@@ -14,6 +14,7 @@ import com.branco.piebackend.repositories.CartRepository;
 import com.branco.piebackend.repositories.ProductRepository;
 import com.branco.piebackend.repositories.UserRepository;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Optional;
 
@@ -21,24 +22,21 @@ import java.util.Optional;
 public class CartServiceImpl implements CartService{
 
     private final CartRepository cartRepository;
-    private final CartItemRepository cartItemRepository;
     private final UserRepository userRepository;
     private final ProductRepository productRepository;
 
     private final CartMapper cartMapper;
-    private final CartItemMapper cartItemMapper;
 
-    public CartServiceImpl(CartRepository cartRepository, CartItemRepository cartItemRepository, CartMapper cartMapper,
-                           UserRepository userRepository, CartItemMapper cartItemMapper, ProductRepository productRepository){
+    public CartServiceImpl(CartRepository cartRepository, CartMapper cartMapper, UserRepository userRepository,
+                           ProductRepository productRepository){
         this.cartRepository = cartRepository;
-        this.cartItemRepository = cartItemRepository;
         this.cartMapper = cartMapper;
         this.userRepository = userRepository;
-        this.cartItemMapper = cartItemMapper;
         this.productRepository = productRepository;
     }
 
     @Override
+    @Transactional
     public Optional<CartResponseDTO> addItemToCart(Long userId, CartItemRequestDTO request) {
         CartEntity cart = this.cartRepository.findByUserId(userId).orElseGet(() -> {
             UserEntity user = this.userRepository.findById(userId)
@@ -70,6 +68,7 @@ public class CartServiceImpl implements CartService{
     }
 
     @Override
+    @Transactional
     public Optional<CartResponseDTO> removeItemFromCart(Long userId, Long cartItemId) {
         CartEntity cart = this.cartRepository.findByUserId(userId).orElseThrow();
         Optional<CartItemEntity> item = cart.getItems().stream()
@@ -83,6 +82,7 @@ public class CartServiceImpl implements CartService{
     }
 
     @Override
+    @Transactional
     public Optional<CartResponseDTO> getCartByUser(Long userId) {
         Optional<CartEntity> optionalCart = this.cartRepository.findByUserId(userId);
         if(optionalCart.isPresent()){
@@ -97,6 +97,7 @@ public class CartServiceImpl implements CartService{
     }
 
     @Override
+    @Transactional
     public void clearCart(Long userId) {
         CartEntity cart = this.cartRepository.findByUserId(userId).orElseThrow();
         cart.getItems().clear();

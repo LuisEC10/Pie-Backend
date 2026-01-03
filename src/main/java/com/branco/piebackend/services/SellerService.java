@@ -12,5 +12,5 @@ public interface SellerService {
 
     Page<SellerResponseDTO> findAll(Pageable pageable);
 
-    SellerResponseDTO save(SellerRegisterDTO sellerEntity);
+    SellerResponseDTO save(SellerRegisterDTO dto, String userCode);
 }

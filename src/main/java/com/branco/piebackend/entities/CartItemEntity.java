@@ -32,5 +32,5 @@ public class CartItemEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "cart_id", nullable = false)
     @ToString.Exclude
-    private CartEntity shoppingCart;
+    private CartEntity cart;
 }

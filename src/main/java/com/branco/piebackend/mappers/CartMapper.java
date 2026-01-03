@@ -25,12 +25,4 @@ public class CartMapper {
                         entity.getItems().stream().map(this.cartItemMapper::convertToResponseDTO).toList())
                 .build();
     }
-
-    public CartEntity convertToEntity(CartResponseDTO response){
-        return CartEntity.builder()
-                .id(response.getId())
-                .total(response.getTotal())
-                .items(response.getItems().stream().map(this.cartItemMapper::convertToEntity).toList())
-                .build();
-    }
 }

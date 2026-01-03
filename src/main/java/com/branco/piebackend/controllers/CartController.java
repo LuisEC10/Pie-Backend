@@ -1,8 +1,6 @@
 package com.branco.piebackend.controllers;
 
-import com.branco.piebackend.entities.UserEntity;
 import com.branco.piebackend.models.cart.CartItemRequestDTO;
-import com.branco.piebackend.repositories.UserRepository;
 import com.branco.piebackend.services.CartService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;

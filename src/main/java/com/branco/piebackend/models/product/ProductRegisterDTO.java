@@ -26,9 +26,6 @@ public class ProductRegisterDTO {
     @Min(0)
     private Integer stock;
 
-    @NotNull
-    private Long sellerId;
-
     @NotBlank
     private String description;
 

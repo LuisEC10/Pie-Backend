@@ -10,6 +10,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.Authentication;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
@@ -60,22 +62,28 @@ public class ProductController {
         return this.productService.findBySellerAndStock(sellerId, stock, pageable);
     }
 
+    // By roles
+
     @PostMapping
-    public ResponseEntity<?> create(@Valid @RequestBody ProductRegisterDTO product, BindingResult result){
+    @PreAuthorize("hasRole('SELLER')")
+    public ResponseEntity<?> create(@Valid @RequestBody ProductRegisterDTO product, BindingResult result,
+                                    Authentication authentication){
         if(result.hasErrors()){
             return validation(result);
         }
-        ProductResponseDTO saved = this.productService.save(product);
+        ProductResponseDTO saved = this.productService.save(product, authentication.getName());
         return ResponseEntity.status(HttpStatus.CREATED).body(saved);
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<?> update(@Valid @RequestBody ProductUpdateDTO product, BindingResult result, @PathVariable Long id){
+    @PreAuthorize("hasRole('SELLER')")
+    public ResponseEntity<?> update(@Valid @RequestBody ProductUpdateDTO product, BindingResult result,
+                                    @PathVariable Long id, Authentication authentication){
         if(result.hasErrors()){
             return validation(result);
         }
 
-        Optional<ProductResponseDTO> optionalProduct = this.productService.update(product, id);
+        Optional<ProductResponseDTO> optionalProduct = this.productService.update(product, id, authentication.getName());
         if(optionalProduct.isPresent()){
             ProductResponseDTO productDTO = optionalProduct.get();
             return ResponseEntity.ok(productDTO);
@@ -84,13 +92,10 @@ public class ProductController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> delete(@PathVariable Long id){
-        Optional<ProductResponseDTO> product = this.productService.findById(id);
-        if(product.isPresent()){
-            this.productService.deleteById(id);
-            return ResponseEntity.noContent().build();
-        }
-        return ResponseEntity.notFound().build();
+    @PreAuthorize("hasRole('SELLER')")
+    public ResponseEntity<Void> delete(@PathVariable Long id, Authentication authentication){
+        this.productService.deleteById(id, authentication.getName());
+        return ResponseEntity.noContent().build();
     }
 
     private static ResponseEntity<Map<String, String>> validation(BindingResult result) {

@@ -8,8 +8,10 @@ import com.branco.piebackend.models.product.ProductResponseDTO;
 import com.branco.piebackend.models.product.ProductUpdateDTO;
 import com.branco.piebackend.repositories.ProductRepository;
 import com.branco.piebackend.repositories.SellerRepository;
+import com.branco.piebackend.repositories.UserRepository;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -28,8 +30,8 @@ public class ProductServiceImpl implements ProductService{
         this.productRepository = productRepository;
         this.productMapper = productMapper;
         this.sellerRepository = sellerRepository;
-
     }
+
     @Override
     @Transactional(readOnly = true)
     public List<ProductResponseDTO> findAll() {
@@ -83,8 +85,10 @@ public class ProductServiceImpl implements ProductService{
 
     @Override
     @Transactional
-    public ProductResponseDTO save(ProductRegisterDTO product) {
-        SellerEntity seller = this.sellerRepository.findById(product.getSellerId()).orElseThrow();
+    public ProductResponseDTO save(ProductRegisterDTO product, String userCode) {
+        SellerEntity seller = this.sellerRepository.findByOwner_Code(userCode).orElseThrow(
+                () -> new RuntimeException("Not seller found with User Code: " + userCode)
+        );
         ProductEntity entity = this.productMapper.convertToEntity(product);
         entity.setSeller(seller);
         ProductEntity saved = this.productRepository.save(entity);
@@ -93,10 +97,11 @@ public class ProductServiceImpl implements ProductService{
 
     @Override
     @Transactional
-    public Optional<ProductResponseDTO> update(ProductUpdateDTO product, Long id) {
+    public Optional<ProductResponseDTO> update(ProductUpdateDTO product, Long id, String userCode) {
         Optional<ProductEntity> optionalProduct = this.productRepository.findById(id);
         if(optionalProduct.isPresent()){
             ProductEntity productDB = optionalProduct.get();
+            validateProductOwnership(productDB, userCode);
             this.productMapper.updateProductFromDTO(product, productDB);
             return Optional.of(this.productMapper.convertToResponseDTO(this.productRepository.save(productDB)));
         }
@@ -105,7 +110,18 @@ public class ProductServiceImpl implements ProductService{
 
     @Override
     @Transactional
-    public void deleteById(Long id) {
-        this.productRepository.deleteById(id);
+    public void deleteById(Long id, String userCode) {
+        Optional<ProductEntity> product = this.productRepository.findById(id);
+        if(product.isPresent()){
+            validateProductOwnership(product.get(), userCode);
+            this.productRepository.deleteById(id);
+        }
+    }
+
+    private void validateProductOwnership(ProductEntity product, String userCode) {
+        String ownerUsername = product.getSeller().getOwner().getCode();
+        if (!ownerUsername.equals(userCode)) {
+            throw new AccessDeniedException("You are not the owner of this product");
+        }
     }
 }

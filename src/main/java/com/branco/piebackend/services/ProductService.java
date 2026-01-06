@@ -32,10 +32,10 @@ public interface ProductService {
     // available by seller and stock
     Page<ProductResponseDTO> findBySellerAndStock(Long sellerId, Integer stock, Pageable pageable);
 
-    ProductResponseDTO save(ProductRegisterDTO productRegisterDTO);
+    ProductResponseDTO save(ProductRegisterDTO productRegisterDTO, String userCode);
 
-    Optional<ProductResponseDTO> update(ProductUpdateDTO product, Long id);
+    Optional<ProductResponseDTO> update(ProductUpdateDTO product, Long id, String userCode);
 
-    void deleteById(Long id);
+    void deleteById(Long id, String userCode);
 
 }
